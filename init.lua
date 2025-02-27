@@ -1003,7 +1003,6 @@ require('lazy').setup({
           use_libuv_file_watcher = true, -- Dosya değişikliklerini izleme
         },
       }
-
       -- Keymaps
       vim.keymap.set('n', '<leader>e', '<cmd>Neotree toggle<CR>', { desc = "Neo-tree'yi Aç/Kapat" })
       vim.keymap.set('n', '<leader>f', '<cmd>Neotree focus<CR>', { desc = "Neo-tree'ye Odaklan" })
@@ -1045,5 +1044,25 @@ require('lazy').setup({
   },
 })
 
+local function resize_neo_tree(amount)
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    local buf = vim.api.nvim_win_get_buf(win)
+    local buf_name = vim.api.nvim_buf_get_name(buf)
+    if buf_name:match 'neo%-tree filesystem' then
+      local win_width = vim.api.nvim_win_get_width(win)
+      vim.api.nvim_win_set_width(win, math.max(10, win_width + amount)) -- Minimum 10 genişlik bırak
+      return
+    end
+  end
+  print 'Neo-tree açık değil!'
+end
+
+vim.keymap.set('n', '<leader>ç', function()
+  resize_neo_tree(5)
+end, { desc = 'Neo-tree Genişliğini Artır' })
+
+vim.keymap.set('n', '<leader>ö', function()
+  resize_neo_tree(-5)
+end, { desc = 'Neo-tree Genişliğini Azalt' })
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
